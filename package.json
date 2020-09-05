@@ -1,6 +1,5 @@
 {
-  "homepage": "https://abdifaishal.github.io/recipe-app/",
-  "name": "recipe-app",
+  "name": "dealer-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
