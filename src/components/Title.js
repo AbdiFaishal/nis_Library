@@ -10,13 +10,13 @@ const Title = ({ loginOpen, setLoginOpen }) => {
         Sign-up today and receive unlimited accesss to all of your reading -
         share your book.
       </p>
+      <button className="btn btn-signup">Sign Up</button>
       <button
-        className="btn btn-signup"
+        className="btn btn-signin"
         onClick={() => setLoginOpen(!loginOpen)}
       >
-        Sign Up
+        Sign In
       </button>
-      <button className="btn btn-signin">Sign In</button>
     </div>
   );
 };

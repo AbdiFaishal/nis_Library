@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Login = ({ setLoginOpen }) => {
+const Register = ({ setLoginOpen }) => {
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -31,11 +31,11 @@ const Login = ({ setLoginOpen }) => {
           <button className="btn">Sign In</button>
         </form>
         <p>
-          Don't have an account ? Click <a href="#dummy">Here</a>
+          Don't have an account ? Click <a href="#">Here</a>
         </p>
       </div>
     </>
   );
 };
 
-export default Login;
+export default Register;
