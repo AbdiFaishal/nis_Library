@@ -93,7 +93,8 @@ a {
   z-index: 1000;
 }
 
-.login-modal {
+.login-modal,
+.register-modal {
   position: relative;
   position: fixed;
   top: 50%;
@@ -108,19 +109,28 @@ a {
   font-family: 'Nunito Sans', sans-serif;
 }
 
-.login-modal h1 {
+.register-modal {
+  height: 680px;
+}
+
+.login-modal h1,
+.register-modal h1 {
   font-size: 36px;
   font-weight: 900;
   margin-bottom: 0.5em;
 }
 
-.login-modal form {
+.login-modal form,
+.register-modal form {
   display: flex;
   flex-direction: column;
 }
 
-.login-modal input {
-  padding: 0 0.5em;
+.login-modal input,
+.register-modal input,
+.register-modal textarea,
+.register-modal select {
+  padding: 0.5em;
   width: 350px;
   height: 50px;
   background-color: rgba(210, 210, 210, 0.25);
@@ -134,7 +144,18 @@ a {
   margin-bottom: 1em;
 }
 
-.login-modal button {
+.register-modal input,
+.register-modal textarea,
+.register-modal select {
+  margin-bottom: 1em;
+}
+
+.register-modal select option:first-child {
+  color: #bcbcbc;
+}
+
+.login-modal button,
+.register-modal button {
   background-color: #ee4622;
   width: 350px;
   height: 50px;
@@ -145,11 +166,17 @@ a {
   cursor: pointer;
 }
 
-.login-modal p {
+.register-modal button {
+  margin-top: 0.5em;
+}
+
+.login-modal p,
+.register-modal p {
   margin-top: 1em;
   text-align: center;
 }
 
-.login-modal a {
+.login-modal a,
+.register-modal a {
   font-weight: 900;
 }
