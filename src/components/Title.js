@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Title = () => {
+const Title = ({ loginOpen, setLoginOpen }) => {
   return (
     <div className="title">
       <h1>
@@ -10,7 +10,12 @@ const Title = () => {
         Sign-up today and receive unlimited accesss to all of your reading -
         share your book.
       </p>
-      <button className="btn btn-signup">Sign Up</button>
+      <button
+        className="btn btn-signup"
+        onClick={() => setLoginOpen(!loginOpen)}
+      >
+        Sign Up
+      </button>
       <button className="btn btn-signin">Sign In</button>
     </div>
   );

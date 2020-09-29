@@ -5,7 +5,7 @@ const MainIcon = () => {
   return (
     <div className="logo">
       <img src={Logo} alt="Logo Book" />
-      <p>Libr'rary</p>
+      <p>Lib'rary</p>
     </div>
   );
 };
