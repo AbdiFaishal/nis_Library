@@ -43,9 +43,6 @@ const Register = ({ setRegisterOpen }) => {
             onChange={(e) => setForm({ ...form, gender: e.target.value })}
             placeholder="Gender"
           >
-            {/* <option disabled={true} value="">
-              Gender
-            </option> */}
             <option value="" hidden>
               Gender
             </option>
