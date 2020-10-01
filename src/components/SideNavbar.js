@@ -17,14 +17,14 @@ const SideNavbar = () => {
             Profile
           </Link>
         </li>
-        <li>
-          <Link to="mylibrary">
+        <li className="active">
+          <Link to="/mylibrary">
             <img src={bookIcon} alt="" />
             My Library
           </Link>
         </li>
         <li>
-          <Link to="addbook">
+          <Link to="/addbook">
             <img src={addBookIcon} alt="" />
             Add Book
           </Link>
