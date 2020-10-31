@@ -1,19 +1,36 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useReducer } from 'react';
 
 export const BookContext = createContext();
 
-const BookContextProvider = (props) => {
-  const [books, setBooks] = useState([
-    { title: 'name of the wind', id: 1 },
-    { title: 'the way of kings', id: 2 },
-    { title: 'the final empire', id: 3 },
-    { title: 'nathe hero of ages', id: 4 },
-  ]);
+const initialState = {
+  books: [],
+  allBooks: [],
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'GET_BOOKS':
+      return {
+        ...state,
+        books: action.payload,
+      };
+
+    case 'GET_ALL_BOOKS':
+      return {
+        ...state,
+        allBooks: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+export const BookContextProvider = (props) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
-    <BookContext.Provider value={{ books }}>
+    <BookContext.Provider value={{ state, dispatch }}>
       {props.children}
     </BookContext.Provider>
   );
 };
-
-export default BookContextProvider;

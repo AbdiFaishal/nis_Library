@@ -191,3 +191,6 @@
 [0818/231214.839:ERROR:crash_report_database_win.cc(428)] unexpected header
 [0818/232714.839:ERROR:crash_report_database_win.cc(428)] unexpected header
 [0818/234214.857:ERROR:crash_report_database_win.cc(428)] unexpected header
+[1015/151421.334:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
+[1016/004918.281:ERROR:file_io.cc(90)] ReadExactly: expected 36, observed 0
+[1017/111607.143:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)

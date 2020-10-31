@@ -1,12 +1,8 @@
-import React, { useContext } from 'react';
-import Landing from './pages/Landing';
+import React, { useEffect, useContext } from 'react';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import Landing from './pages/Landing';
 import Home from './pages/Home';
 import MyLibrary from './pages/MyLibrary';
 import DetailBook from './pages/DetailBook';
@@ -14,18 +10,18 @@ import Profile from './pages/Profile';
 import AddBook from './pages/AddBook';
 import Admin from './pages/Admin';
 import ReadBook from './pages/ReadBook';
-import { UserContext, UserContextProvider } from './context/userContext';
+import AddBookAdmin from './pages/AddBookAdmin';
 
-const AuthenticatedRoute = ({ children, ...rest }) => {
-  const { state } = useContext(UserContext);
+import PrivateRoute from './components/PrivateRoute';
 
-  return (
-    <Route
-      {...rest}
-      render={() => (state.isLogin ? children : <Redirect to="/" />)}
-    />
-  );
-};
+import { API, setAuthToken } from './config/api';
+
+import { UserContext } from './context/userContext';
+// import { BookmarkContext } from './context/bookmarkContext';
+import AdminRoute from './components/AdminRoute';
+
+// if token available in localstorage then set default header for auth
+if (localStorage.token) setAuthToken(localStorage.token);
 
 const AppRoutes = () => {
   return (
@@ -33,39 +29,60 @@ const AppRoutes = () => {
       <Route exact path="/">
         <Landing />
       </Route>
-      <AuthenticatedRoute path="/home">
+      <PrivateRoute path="/home">
         <Home />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/mylibrary">
+      </PrivateRoute>
+      <PrivateRoute path="/mylibrary">
         <MyLibrary />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/profile">
+      </PrivateRoute>
+      <PrivateRoute path="/profile">
         <Profile />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/addbook">
+      </PrivateRoute>
+      <PrivateRoute path="/addbook">
         <AddBook />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/admin">
-        <Admin />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/detail/:id">
+      </PrivateRoute>
+      <PrivateRoute path="/detail/:id">
         <DetailBook />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/read-book">
+      </PrivateRoute>
+      <PrivateRoute path="/read-book/:id">
         <ReadBook />
-      </AuthenticatedRoute>
+      </PrivateRoute>
+      <AdminRoute exact path="/admin">
+        <Admin />
+      </AdminRoute>
+      <AdminRoute path="/admin/addbook">
+        <AddBookAdmin />
+      </AdminRoute>
     </Switch>
   );
 };
 
 const App = () => {
+  const { dispatch } = useContext(UserContext);
+  // const { dispatch: bookmarkDispatch } = useContext(BookmarkContext);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const res = await API.get('/auth');
+        dispatch({
+          type: 'USER_LOADED',
+          payload: res.data.data.user,
+        });
+      } catch (err) {
+        dispatch({
+          type: 'AUTH_ERROR',
+        });
+      }
+    };
+    loadUser();
+  }, []);
+
   return (
     <Router>
-      <UserContextProvider>
-        <div>
-          <AppRoutes />
-        </div>
-      </UserContextProvider>
+      <div>
+        <AppRoutes />
+      </div>
     </Router>
   );
 };

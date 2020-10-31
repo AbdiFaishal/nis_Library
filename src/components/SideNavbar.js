@@ -14,7 +14,7 @@ const SideNavbar = () => {
 
   const userLogout = () => {
     dispatch({ type: 'LOGOUT' });
-    localStorage.removeItem('isLogin');
+    // localStorage.removeItem('isLogin');
   };
   return (
     <div className="side-nav">
@@ -49,7 +49,7 @@ const SideNavbar = () => {
         </li>
         <Ruler />
         <li>
-          <Link to="/" onClick={userLogout}>
+          <Link className="btn-user-logout" to="/" onClick={userLogout}>
             <img src={logoutIcon} alt="" />
             Logout
           </Link>

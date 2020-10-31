@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { API, setAuthToken } from './../config/api';
+import { UserContext } from './../context/userContext';
+import LoadingButton from './common/LoadingButton/LoadingButton';
 
 const Register = ({ setRegisterOpen, setLoginOpen }) => {
+  const history = useHistory();
+  const { dispatch } = useContext(UserContext);
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -10,6 +15,8 @@ const Register = ({ setRegisterOpen, setLoginOpen }) => {
     phone: '',
     address: '',
   });
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const closeModal = (e) => {
     setRegisterOpen(false);
@@ -20,12 +27,56 @@ const Register = ({ setRegisterOpen, setLoginOpen }) => {
     setLoginOpen(true);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const res = await API.post('/register', form);
+      dispatch({
+        type: 'REGISTER_SUCCESS',
+        payload: res.data.data,
+      });
+      setAuthToken(res.data.data.token);
+      setLoading(false);
+      setMessage(res.data.message);
+
+      try {
+        const res = await API.get('/auth');
+        dispatch({
+          type: 'USER_LOADED',
+          payload: res.data.data.user,
+        });
+        if (res.data.data.user.role === 'admin') {
+          setTimeout(() => {
+            history.push('/admin');
+          }, 750);
+        } else {
+          setTimeout(() => {
+            history.push('/home');
+          }, 750);
+        }
+      } catch (err) {
+        dispatch({
+          type: 'AUTH_ERROR',
+        });
+      }
+    } catch (err) {
+      setMessage(err.response.data.error.message);
+      setLoading(false);
+
+      dispatch({
+        type: 'REGISTER_FAIL',
+      });
+    }
+  };
+
   return (
-    <>
-      <div className="modal" onClick={closeModal}></div>
+    <div className="modal-parent">
+      <div className="modal-background" onClick={closeModal}></div>
       <div className="register-modal">
         <h1>Sign Up</h1>
-        <form>
+        <form onSubmit={(e) => handleSubmit(e)}>
           <input
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             value={form.email}
@@ -40,7 +91,7 @@ const Register = ({ setRegisterOpen, setLoginOpen }) => {
           />
           <input
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-            value={form.fullname}
+            value={form.fullName}
             type="text"
             placeholder="Full Name"
           />
@@ -49,11 +100,11 @@ const Register = ({ setRegisterOpen, setLoginOpen }) => {
             onChange={(e) => setForm({ ...form, gender: e.target.value })}
             placeholder="Gender"
           >
-            <option value="" hidden>
+            <option className="option-hidden" value="" hidden>
               Gender
             </option>
-            <option value="laki-laki">Laki-laki</option>
-            <option value="perempuan">Perempuan</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
           <input
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -66,7 +117,12 @@ const Register = ({ setRegisterOpen, setLoginOpen }) => {
             onChange={(e) => setForm({ ...form, address: e.target.value })}
             placeholder="Address"
           />
-          <button className="btn">Sign Up</button>
+          <div>
+            <p>{message && message}</p>
+          </div>
+          <button className="btn" disabled={loading}>
+            {loading ? <LoadingButton /> : 'Sign Up'}
+          </button>
         </form>
         <p>
           Already have an account ? Click{' '}
@@ -75,7 +131,7 @@ const Register = ({ setRegisterOpen, setLoginOpen }) => {
           </Link>
         </p>
       </div>
-    </>
+    </div>
   );
 };
 

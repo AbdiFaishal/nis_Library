@@ -1,15 +1,25 @@
 import React, { useState, useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import { API, setAuthToken } from '../config/api';
 import { UserContext } from '../context/userContext';
+import LoadingButton from './common/LoadingButton/LoadingButton';
 
 const Login = ({ setLoginOpen, setRegisterOpen }) => {
   const { dispatch } = useContext(UserContext);
   const [form, setForm] = useState({
-    email: '',
-    password: '',
+    email: 'tonank@gmail.com',
+    password: 'tonank1234',
   });
+  const [loginMessage, setLoginMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  let history = useHistory();
+  const history = useHistory();
+  const { email, password } = form;
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setLoginMessage('');
+  };
 
   const closeModal = (e) => {
     setLoginOpen(false);
@@ -20,38 +30,85 @@ const Login = ({ setLoginOpen, setRegisterOpen }) => {
     setRegisterOpen(true);
   };
 
-  const onSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = form;
-    if (email === 'abdi.faishal@gmail.com' && password === 'asd1234') {
-      dispatch({ type: 'LOGIN' });
-      localStorage.setItem('isLogin', true);
-      history.push('/home');
-    } else {
-      console.log('login fail');
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const body = JSON.stringify({ email, password });
+
+    try {
+      setLoading(true);
+      const res = await API.post('/login', body, config);
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: res.data.data,
+      });
+      setAuthToken(res.data.data.token);
+      setLoginMessage(res.data.message);
+      setLoading(false);
+
+      try {
+        const res = await API.get('/auth');
+        dispatch({
+          type: 'USER_LOADED',
+          payload: res.data.data.user,
+        });
+        if (res.data.data.user.role === 'admin') {
+          setTimeout(() => {
+            history.push('/admin');
+          }, 150);
+        } else {
+          setTimeout(() => {
+            history.push('/home');
+          }, 150);
+        }
+      } catch (err) {
+        dispatch({
+          type: 'AUTH_ERROR',
+        });
+      }
+    } catch (err) {
+      setLoginMessage(err.response.data.error.message);
+      setLoading(false);
+
+      dispatch({
+        type: 'LOGIN_FAIL',
+      });
     }
   };
 
   return (
-    <>
-      <div className="modal" onClick={closeModal}></div>
+    <div className="modal-parent">
+      <div className="modal-background" onClick={closeModal}></div>
       <div className="login-modal">
         <h1>Sign In</h1>
-        <form onSubmit={(e) => onSubmit(e)}>
+        <form onSubmit={(e) => handleSubmit(e)}>
           <input
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            name="email"
+            onChange={(e) => handleChange(e)}
             value={form.email}
             type="email"
             placeholder="Email"
           />
           <input
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            name="password"
+            onChange={(e) => handleChange(e)}
             value={form.password}
             type="password"
             placeholder="Password"
           />
-          <button className="btn">Sign In</button>
+          <div>
+            <p>{loginMessage && loginMessage}</p>
+          </div>
+          <button className="btn" disabled={loading}>
+            {loading ? <LoadingButton /> : 'Sign In'}
+          </button>
         </form>
+
         <p>
           Don't have an account ? Click{' '}
           <Link to="/" onClick={moveToRegister}>
@@ -59,7 +116,7 @@ const Login = ({ setLoginOpen, setRegisterOpen }) => {
           </Link>
         </p>
       </div>
-    </>
+    </div>
   );
 };
 

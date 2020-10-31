@@ -1,113 +1,170 @@
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import MainIcon from './../components/MainIcon';
-import userProfile from '../img/profilePic.png';
 
 import ceklisIcon from '../img/icons/ceklisIcon.png';
 import ButtonVerif from '../components/ButtonVerif';
-
-let bookVerif = [
-  {
-    id: 1,
-    author: 'Randall Munroe',
-    isbn: '9781789807554',
-    ebook: 'what if ? absurd Question.pdf',
-    status: 'Approve',
-    action: 'complete',
-  },
-  {
-    id: 2,
-    author: 'Morris Willimson',
-    isbn: '9781789807555',
-    ebook: 'Glyph.pdf',
-    status: 'Approve',
-    action: 'complete',
-  },
-  {
-    id: 3,
-    author: 'J. K. Rowling',
-    isbn: '9781789807666',
-    ebook: 'Harrypoter.pdf',
-    status: 'Cancel',
-    action: 'wait',
-  },
-  {
-    id: 4,
-    author: 'Rachel Hartman',
-    isbn: '9781789807576',
-    ebook: 'tessonroad.jpg',
-    status: 'Waiting to be verified',
-    action: 'waiting',
-  },
-  {
-    id: 5,
-    author: 'Aziz Oni On',
-    isbn: '9781789807709',
-    ebook: '7ds.jpg',
-    status: 'Waiting to be verified',
-    action: 'waiting',
-  },
-  {
-    id: 6,
-    author: 'Sugeng No Pants',
-    isbn: '9781789807000',
-    ebook: 'fixyou.jpg',
-    status: 'Waiting to be verified',
-    action: 'waiting',
-  },
-];
+import { Link, useHistory } from 'react-router-dom';
+import { UserContext } from '../context/userContext';
+import defaultAvatar from '../img/no-profile-picture.png';
+// import { BookContext } from './../context/bookContext';
+import { API } from './../config/api';
+// import ConfirmModal from '../components/common/ConfirmModal';
+import AdminConfirm from '../components/AdminConfirm';
 
 const Admin = () => {
+  const { state, dispatch } = useContext(UserContext);
+  // const { state: bookState, dispatch } = useContext(BookContext);
+  const history = useHistory();
+  const [books, setBooks] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [choice, setChoice] = useState(null);
+  const [bookId, setBookId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
   const addCustomClass = (status) => {
-    if (status === 'Approve') {
+    if (status === 'Approved') {
       return 'approved';
-    } else if (status === 'Cancel') {
+    } else if (status === 'Canceled') {
       return 'canceled';
     } else {
       return 'waiting';
     }
   };
 
-  const addCustomIcon = (action) => {
-    if (action === 'complete') {
+  const addCustomIcon = (action, id) => {
+    if (action === 'Approved') {
       return <img src={ceklisIcon} alt="ceklis icon" />;
     } else {
-      return <ButtonVerif />;
+      return (
+        <ButtonVerif
+          action={action}
+          setChoice={setChoice}
+          setModalOpen={setModalOpen}
+          getBooks={getBooks}
+          handleSubmit={handleSubmit}
+          setMessage={setMessage}
+          setBookId={setBookId}
+          id={id}
+        />
+      );
     }
   };
+
+  const editFormat = (input) => {
+    if (input) {
+      const index = input.lastIndexOf('Z');
+      return input.slice(index + 1);
+    }
+    return 'File Null';
+  };
+
+  const handleLogout = () => {
+    dispatch({ type: 'LOGOUT' });
+    // localStorage.removeItem('isLogin');
+  };
+
+  const handleSubmit = async (id) => {
+    try {
+      let status;
+      if (choice === 'approve') {
+        status = 'Approved';
+      } else {
+        status = 'Canceled';
+      }
+      setLoading(true);
+      const res = await API.patch(`/book-verify/${id}`, {
+        status,
+      });
+      getBooks();
+      // console.log('res: ', res);
+      setMessage(res.data.message);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err.response);
+    }
+  };
+
+  const getBooks = async () => {
+    try {
+      const res = await API.get('/books');
+      setBooks(res.data.data);
+
+      // setBooks(res.data.data);
+    } catch (err) {
+      console.log(err.response);
+    }
+  };
+  useEffect(() => {
+    getBooks();
+  }, []);
+
   return (
     <div className="admin-page">
       <div className="navbar container">
         <MainIcon />
-        <div className="user-avatar">
-          <img src={userProfile} alt="" />
+        <div className="admin-avatar">
+          <img
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            src={state.user.avatar ? state.user.avatar : defaultAvatar}
+            alt=""
+          />
+          {dropdownOpen && (
+            <div className="dropdown-admin">
+              <p onClick={() => history.push('/admin/addbook')}>Add Book</p>
+              <p onClick={handleLogout}>Logout</p>
+            </div>
+          )}
         </div>
       </div>
       <div className="container book-verification">
         <h1>Book verification</h1>
 
         <table className="admin-table">
-          <tr>
-            <th>No</th>
-            <th>Users or Author</th>
-            <th>ISBN</th>
-            <th>E-book</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-          {bookVerif.map((book, index) => {
-            return (
-              <tr key={book.id}>
-                <td>{index + 1}</td>
-                <td>{book.author}</td>
-                <td>{book.isbn}</td>
-                <td>{book.ebook}</td>
-                <td className={addCustomClass(book.status)}>{book.status}</td>
-                <td>{addCustomIcon(book.action)}</td>
-              </tr>
-            );
-          })}
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Users or Author</th>
+              <th>ISBN</th>
+              <th>E-book</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {books.map((book, index) => {
+              return (
+                <tr key={book.id}>
+                  <td>{index + 1}</td>
+                  <td>{book.user.fullName}</td>
+                  <td>{book.ISBN}</td>
+                  <td>
+                    <Link to={book.file ? book.file : '/admin'}>
+                      {editFormat(book.file)}
+                    </Link>
+                  </td>
+                  <td className={books.length && addCustomClass(book.status)}>
+                    {book.status}
+                  </td>
+                  <td>{addCustomIcon(book.status, book.id)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
+      {modalOpen && (
+        <AdminConfirm
+          choice={choice}
+          setModalOpen={setModalOpen}
+          handleSubmit={handleSubmit}
+          bookId={bookId}
+          loading={loading}
+          message={message}
+        />
+      )}
     </div>
   );
 };

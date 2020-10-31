@@ -7,13 +7,21 @@ const CardBook = (props) => {
   const moveToDetailBook = (id) => {
     history.push(`/detail/${id}`);
   };
+
   return (
-    <div onClick={() => moveToDetailBook(props.id)} className="card-book">
-      <img src={props.image} alt="" />
-      <div className="book-desc">
-        <p className="title">{props.title}</p>
-        <p className="author">{props.author}</p>
+    <div className="card-book-container">
+      <div className="card-book" onClick={() => moveToDetailBook(props.id)}>
+        <img src={props.image} alt="" />
+        <div className="book-desc">
+          <p className="title">{props.title}</p>
+          <p className="author">{props.user.fullName}</p>
+        </div>
       </div>
+      {props.status === 'Waiting' && (
+        <div className="book-waiting">
+          <p>Waiting to be verified</p>
+        </div>
+      )}
     </div>
   );
 };

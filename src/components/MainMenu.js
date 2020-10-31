@@ -2,7 +2,7 @@ import React from 'react';
 import coverBook1 from '../img/coverBook1.png';
 import ListBook from './ListBook';
 
-const MainMenu = () => {
+const MainMenu = ({ categories }) => {
   return (
     <div className="main-menu">
       <div className="frame">
@@ -16,7 +16,7 @@ const MainMenu = () => {
           <img src={coverBook1} alt="Fix You Book" />
         </div>
       </div>
-      <ListBook />
+      <ListBook categories={categories} />
     </div>
   );
 };
