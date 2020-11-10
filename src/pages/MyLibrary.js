@@ -7,6 +7,7 @@ import { API } from './../config/api';
 import { BookmarkContext } from './../context/bookmarkContext';
 
 import EmptyList from '../components/common/EmptyList';
+import LoadingSpinner from '../components/common/LoadingSpinner/LoadingSpinner';
 
 const MyLibrary = () => {
   const { state, dispatch } = useContext(BookmarkContext);
@@ -28,14 +29,13 @@ const MyLibrary = () => {
     };
     getBookmark();
   }, [dispatch]);
-  console.log('state: ', state);
   return (
     <div className="container my-library">
       <SideMenu />
       <div className="books-library">
         <h1>My Library</h1>
         {loading ? (
-          <p>Loading...</p>
+          <LoadingSpinner />
         ) : !state.bookmarks.length ? (
           <EmptyList text={'Your bookmark is empty'} />
         ) : (

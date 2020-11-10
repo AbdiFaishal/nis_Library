@@ -8,6 +8,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   // const [books, setBooks] = useState([]);
   const { dispatch } = useContext(BookContext);
+  const [bookLoading, setBookLoading] = useState(false);
 
   useEffect(() => {
     const getCategories = async () => {
@@ -26,14 +27,17 @@ const Home = () => {
   useEffect(() => {
     const getBooks = async () => {
       try {
+        setBookLoading(true);
         const res = await API.get('/approved-books');
         dispatch({
           type: 'GET_BOOKS',
           payload: res.data.data,
         });
+        setBookLoading(false);
         // setBooks(res.data.data);
       } catch (err) {
         console.log(err.response);
+        setBookLoading(false);
       }
     };
 
@@ -43,7 +47,7 @@ const Home = () => {
   return (
     <div className="container home-page">
       <SideMenu />
-      <MainMenu categories={categories} />
+      <MainMenu categories={categories} bookLoading={bookLoading} />
     </div>
   );
 };

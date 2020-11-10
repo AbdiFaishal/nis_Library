@@ -7,6 +7,7 @@ import CardBook from './CardBook';
 // import book2 from '../img/book-cards/book-card-2.png';
 // import book3 from '../img/book-cards/book-card-3.png';
 // import book4 from '../img/book-cards/book-card-4.png';
+import LoadingSpinner from './common/LoadingSpinner/LoadingSpinner';
 
 // const listBooks = [
 //   {
@@ -39,18 +40,20 @@ import CardBook from './CardBook';
 //   },
 // ];
 
-const ListCardBook = ({ category }) => {
+const ListCardBook = ({ category, bookLoading }) => {
   const { state } = useContext(BookContext);
 
   return (
     <div className="book-cards">
-      {category === 'all'
-        ? state.books.map((book) => <CardBook key={book.id} {...book} />)
-        : state.books
-            .filter((book) =>
-              book.category.name.toLowerCase().includes(category)
-            )
-            .map((book) => <CardBook key={book.id} {...book} />)}
+      {bookLoading ? (
+        <LoadingSpinner />
+      ) : category === 'all' ? (
+        state.books.map((book) => <CardBook key={book.id} {...book} />)
+      ) : (
+        state.books
+          .filter((book) => book.category.name.toLowerCase().includes(category))
+          .map((book) => <CardBook key={book.id} {...book} />)
+      )}
     </div>
   );
 };

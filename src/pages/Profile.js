@@ -9,6 +9,7 @@ import { API } from './../config/api';
 import CardBook from '../components/CardBook';
 import UploadAvatar from '../components/UploadAvatar';
 import EmptyList from '../components/common/EmptyList';
+import LoadingSpinner from '../components/common/LoadingSpinner/LoadingSpinner';
 
 const Profile = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -71,7 +72,7 @@ const Profile = () => {
         setOwnedBooks(res.data.data);
       } catch (err) {
         setBookLoading(false);
-        console.log(err);
+        console.log(err.response);
       }
     };
     getBooks();
@@ -129,9 +130,9 @@ const Profile = () => {
           <h1>My Books</h1>
           <div className="list-owned-books">
             {bookLoading ? (
-              <h1>Loading...</h1>
+              <LoadingSpinner />
             ) : !ownedBooks.length ? (
-              <EmptyList text={`You haven't uploaded any books yet`} />
+              <EmptyList text={`You haven't uploaded any book yet`} />
             ) : (
               ownedBooks.map((book) => {
                 return <CardBook key={book.id} {...book} />;

@@ -4,6 +4,23 @@ import { useHistory } from 'react-router-dom';
 const CardBook = (props) => {
   let history = useHistory();
 
+  const convertString = (string, limit = 32) => {
+    const newString = [];
+    if (string.length > limit) {
+      string.split(' ').reduce((acc, cur) => {
+        if (acc + cur.length <= limit) {
+          newString.push(cur);
+        }
+        return acc + cur.length;
+      }, 0);
+
+      // return the result
+      return `${newString.join(' ')}...`;
+    } else {
+      return string;
+    }
+  };
+
   const moveToDetailBook = (id) => {
     history.push(`/detail/${id}`);
   };
@@ -13,7 +30,7 @@ const CardBook = (props) => {
       <div className="card-book" onClick={() => moveToDetailBook(props.id)}>
         <img src={props.image} alt="" />
         <div className="book-desc">
-          <p className="title">{props.title}</p>
+          <p className="title">{convertString(props.title)}</p>
           <p className="author">{props.user.fullName}</p>
         </div>
       </div>

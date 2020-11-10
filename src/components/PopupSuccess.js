@@ -2,15 +2,15 @@ import React from 'react';
 
 const PopupSuccess = ({ setPopupOpen }) => {
   return (
-    <>
+    <div className="modal-parent">
       <div
         onClick={() => setPopupOpen(false)}
         className="modal-background"
       ></div>
       <div className="popup-success">
-        <p>Your book has been added successfully</p>
+        <p>New book has been added to bookmark successfully</p>
       </div>
-    </>
+    </div>
   );
 };
 

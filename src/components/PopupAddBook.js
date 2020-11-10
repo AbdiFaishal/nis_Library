@@ -1,12 +1,17 @@
 import React from 'react';
 
-const PopupAddBook = ({ setPopupOpen, textError, setTextError }) => {
-  const closeModal = () => {
-    setPopupOpen(false);
-    setTextError(null);
-  };
+const PopupAddBook = ({
+  setPopupOpen,
+  textError,
+  setTextError,
+  closeModal,
+}) => {
+  // const closeModal = () => {
+  //   setPopupOpen(false);
+  //   setTextError(null);
+  // };
 
-  console.log('setTextError: ', setTextError);
+  // console.log('setTextError: ', setTextError);
   return (
     <div className="modal-parent">
       <div onClick={closeModal} className="modal-background"></div>

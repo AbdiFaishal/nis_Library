@@ -8,8 +8,9 @@ import {
 } from 'react-reader';
 
 // import alice from '../epub/alice.epub';
-import prince from '../epub/the_little_prince.epub';
-import whatif from '../epub/What-if-serious.epub';
+// import prince from '../epub/the_little_prince.epub';
+// import whatif from '../epub/What-if-serious.epub';
+// import alice from '../epub/alices-adventures-in-wonderland.epub';
 
 import { useParams } from 'react-router-dom';
 import { API } from './../config/api';
@@ -38,7 +39,7 @@ const ReadBook = () => {
     getBook();
   }, [params.id]);
 
-  console.log('epub: ', book);
+  // console.log('epub: ', book);
   return (
     <div className="container">
       <MainIcon />

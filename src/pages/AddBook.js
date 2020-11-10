@@ -8,6 +8,7 @@ const AddBook = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [textError, setTextError] = useState(null);
+  const [loadingCategory, setLoadingCategory] = useState(false);
   const [bookData, setBookData] = useState({
     title: '',
     publication: '',
@@ -28,6 +29,11 @@ const AddBook = () => {
     file,
     image,
   } = bookData;
+
+  const closeModal = () => {
+    setPopupOpen(false);
+    setTextError(null);
+  };
 
   const handleChange = (e) => {
     setBookData({
@@ -79,10 +85,9 @@ const AddBook = () => {
       });
       console.log('res: ', res);
     } catch (err) {
+      console.log(err.response);
       setLoading(false);
       setTextError(err.response.data.error.message);
-
-      console.log(err.response);
     }
   };
 
@@ -90,11 +95,14 @@ const AddBook = () => {
     setTextError('');
     const getCategories = async () => {
       try {
+        setLoadingCategory(true);
         const res = await API.get('/categories');
-        console.log(res);
+        // console.log(res);
         setCategories(res.data.data);
+        setLoadingCategory(false);
       } catch (err) {
         console.log(err.response);
+        setLoadingCategory(false);
       }
     };
     getCategories();
@@ -130,7 +138,7 @@ const AddBook = () => {
             name="categoryId"
           >
             <option className="option-hidden" value="" hidden>
-              Category
+              {loadingCategory ? 'Loading...' : 'Category'}
             </option>
             {categories &&
               categories.map((item) => (
@@ -198,14 +206,10 @@ const AddBook = () => {
         </form>
       </div>
       {popupOpen ? (
-        <PopupAddBook setPopupOpen={setPopupOpen} />
+        <PopupAddBook closeModal={closeModal} />
       ) : (
         textError && (
-          <PopupAddBook
-            setPopupOpen={setPopupOpen}
-            textError={textError}
-            setTextError={setTextError}
-          />
+          <PopupAddBook textError={textError} closeModal={closeModal} />
         )
       )}
     </div>

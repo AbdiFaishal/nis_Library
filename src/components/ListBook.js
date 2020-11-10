@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import arrowIcon from '../img/icons/V.png';
 import ListCardBook from './ListCardBook';
 
-const ListBook = ({ categories }) => {
+const ListBook = ({ categories, bookLoading }) => {
   const [category, setCategory] = useState('');
   const changeCategory = (category) => {
     setCategory(category);
@@ -32,7 +32,7 @@ const ListBook = ({ categories }) => {
           </div>
         </div>
       </div>
-      <ListCardBook category={category} />
+      <ListCardBook category={category} bookLoading={bookLoading} />
     </div>
   );
 };

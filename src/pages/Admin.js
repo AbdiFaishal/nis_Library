@@ -3,13 +3,14 @@ import MainIcon from './../components/MainIcon';
 
 import ceklisIcon from '../img/icons/ceklisIcon.png';
 import ButtonVerif from '../components/ButtonVerif';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { UserContext } from '../context/userContext';
 import defaultAvatar from '../img/no-profile-picture.png';
 // import { BookContext } from './../context/bookContext';
 import { API } from './../config/api';
 // import ConfirmModal from '../components/common/ConfirmModal';
 import AdminConfirm from '../components/AdminConfirm';
+import LoadingSpinner from '../components/common/LoadingSpinner/LoadingSpinner';
 
 const Admin = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -22,6 +23,7 @@ const Admin = () => {
   const [bookId, setBookId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [loadingBook, setLoadingBook] = useState(false);
 
   const addCustomClass = (status) => {
     if (status === 'Approved') {
@@ -54,7 +56,7 @@ const Admin = () => {
 
   const editFormat = (input) => {
     if (input) {
-      const index = input.lastIndexOf('Z');
+      const index = input.lastIndexOf('/');
       return input.slice(index + 1);
     }
     return 'File Null';
@@ -89,12 +91,14 @@ const Admin = () => {
 
   const getBooks = async () => {
     try {
+      setLoadingBook(true);
       const res = await API.get('/books');
       setBooks(res.data.data);
-
+      setLoadingBook(false);
       // setBooks(res.data.data);
     } catch (err) {
       console.log(err.response);
+      setLoadingBook(false);
     }
   };
   useEffect(() => {
@@ -134,24 +138,39 @@ const Admin = () => {
             </tr>
           </thead>
           <tbody>
-            {books.map((book, index) => {
-              return (
-                <tr key={book.id}>
-                  <td>{index + 1}</td>
-                  <td>{book.user.fullName}</td>
-                  <td>{book.ISBN}</td>
-                  <td>
-                    <Link to={book.file ? book.file : '/admin'}>
+            {loadingBook ? (
+              <tr>
+                <td className="empty-book" colSpan="6">
+                  <LoadingSpinner />
+                </td>
+              </tr>
+            ) : !books.length ? (
+              <tr>
+                <td className="empty-book" colSpan="6">
+                  Books is empty
+                </td>
+              </tr>
+            ) : (
+              books.map((book, index) => {
+                return (
+                  <tr key={book.id}>
+                    <td>{index + 1}</td>
+                    <td>{book.user.fullName}</td>
+                    <td>{book.ISBN}</td>
+                    <td>
+                      {/* <Link to={book.file ? book.file : '/admin'}>
                       {editFormat(book.file)}
-                    </Link>
-                  </td>
-                  <td className={books.length && addCustomClass(book.status)}>
-                    {book.status}
-                  </td>
-                  <td>{addCustomIcon(book.status, book.id)}</td>
-                </tr>
-              );
-            })}
+                    </Link> */}
+                      <a href={book.file}>{editFormat(book.file)}</a>
+                    </td>
+                    <td className={books.length && addCustomClass(book.status)}>
+                      {book.status}
+                    </td>
+                    <td>{addCustomIcon(book.status, book.id)}</td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
