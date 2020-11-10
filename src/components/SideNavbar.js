@@ -51,16 +51,17 @@ const SideNavbar = () => {
             My Library
           </Link>
         </li>
-
-        <li>
-          <Link
-            className={pathname === '/addbook' ? 'active' : null}
-            to="/addbook"
-          >
-            <img src={addBookIcon} alt="" />
-            Add Book
-          </Link>
-        </li>
+        {state.user.role === 'user' && (
+          <li>
+            <Link
+              className={pathname === '/addbook' ? 'active' : null}
+              to="/addbook"
+            >
+              <img src={addBookIcon} alt="" />
+              Add Book
+            </Link>
+          </li>
+        )}
 
         <Ruler />
         <li>
